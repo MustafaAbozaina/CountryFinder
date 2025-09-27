@@ -1,5 +1,5 @@
 //
-//  CountryDTO.swift
+//  CountryModel.swift
 //  CountryFinder
 //
 //  Created by Mustafa Abozaina on 9/26/25.
@@ -8,21 +8,16 @@
 import Foundation
 
 struct CountryModel: Decodable {
+    let alpha3Code: String?
     let name: String
     let capital: String?
     let region: String?
     let subregion: String?
     let population: Int?
-    let flags: Flags
+    let flag: String?
     let currencies: [Currency]?
 
-    // convenient computed property
     var currency: String? { currencies?.first?.code }
-
-    struct Flags: Decodable {
-        let svg: String?
-        let png: String?
-    }
 
     struct Currency: Decodable, Hashable {
         let code: String?
@@ -36,10 +31,10 @@ extension CountryModel: DomainMappable {
 
     func toDomain() -> Country {
         Country(
-            id: UUID().uuidString, // since JSON doesn’t provide id
+            id: alpha3Code ?? UUID().uuidString,
             name: name,
             capital: capital,
-            flagURL: flags.png ?? flags.svg,
+            flagURL: flag,
             currency: currency
         )
     }

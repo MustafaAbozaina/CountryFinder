@@ -8,7 +8,7 @@
 import Foundation
 
 struct Country: Identifiable, Hashable {
-    let id: String          // alpha3Code
+    let id: String          
     let name: String
     let capital: String?
     let flagURL: String?
