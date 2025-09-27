@@ -16,11 +16,14 @@ final class DefaultCountriesRepository: CountriesRepository {
         self.remote = remote
     }
 
-    // Fetch all from remote then cache locally
-    func fetchAllCountries() async throws -> [Country] {
-        let countries = try await remote.fetchAllCountries(fields: nil)
-        try await local.saveCountries(countries)
-        return countries
+    func fetchAllCountries(strategy: SearchStrategy) async throws -> [Country] {
+        switch strategy {
+        case .local:
+            return try await local.getCachedCountries()
+        case .remote:
+            let countries = try await remote.fetchAllCountries(fields: nil)
+            return countries
+        }
     }
 
     func saveCountries(_ countries: [Country]) async throws {
