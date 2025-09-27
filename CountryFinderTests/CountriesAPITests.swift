@@ -9,7 +9,6 @@ import Testing
 @testable import CountryFinder
 
 struct CountriesAPITests {
-    // System Under Test
     let remote = DefaultCountriesRemoteDataSource(client: NetworkManager())
 
     @Test("Fetch all countries should return a non-empty list")

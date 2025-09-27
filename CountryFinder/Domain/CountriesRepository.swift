@@ -8,7 +8,7 @@
 import Foundation
 
 protocol CountriesRepository {
-    func fetchAllCountries() async throws -> [Country]
+    func fetchAllCountries(strategy: SearchStrategy) async throws -> [Country]
     func saveCountries(_ countries: [Country]) async throws
     func searchCountries(keyword: String, strategy: SearchStrategy) async throws -> [Country]
 
