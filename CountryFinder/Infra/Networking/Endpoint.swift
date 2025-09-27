@@ -48,7 +48,7 @@ struct Endpoint {
     }
 
     init(
-        baseUrl: URL = URL(string: "https://restcountries.com/v2/")!,
+        baseUrl: URL = URL(string: "https://restcountries.com/v3/")!,
         path: String? = nil,
         method: HTTPMethod = .get,
         headers: [String: String] = ["Accept": "application/json"],

@@ -8,21 +8,42 @@
 import Foundation
 
 struct CountryModel: Decodable {
-    let alpha3Code: String?
-    let name: String
-    let capital: String?
+    let cca3: String
+    let name: Name
+    let capital: [String]?
     let region: String?
     let subregion: String?
     let population: Int?
-    let flag: String?
-    let currencies: [Currency]?
+    let latlng: [Double]?
+    let timezones: [String]?
+    let flags: Flags
+    let currencies: [String: Currency]?
+    let independent: Bool?
 
-    var currency: String? { currencies?.first?.code }
+    struct Name: Decodable {
+        let common: String
+        let official: String
+        let nativeName: [String: NativeName]?
+    }
+
+    struct NativeName: Decodable {
+        let official: String
+        let common: String
+    }
+
+    struct Flags: Decodable {
+        let png: String?
+        let svg: String?
+        let alt: String?
+    }
 
     struct Currency: Decodable, Hashable {
-        let code: String?
         let name: String?
         let symbol: String?
+    }
+
+    var currency: String? {
+        currencies?.first?.key
     }
 }
 
@@ -31,10 +52,10 @@ extension CountryModel: DomainMappable {
 
     func toDomain() -> Country {
         Country(
-            id: alpha3Code ?? UUID().uuidString,
-            name: name,
-            capital: capital,
-            flagURL: flag,
+            id: cca3,
+            name: name.common,
+            capital: capital?.first,
+            flagURL: flags.png ?? flags.svg,
             currency: currency
         )
     }
