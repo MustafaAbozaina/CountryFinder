@@ -17,8 +17,7 @@ struct EndpointTests {
             path: "name/egypt",
             queryItems: [URLQueryItem(name: "fullText", value: "true")]
         )
-        debugPrint("Mostafa \(String(describing: endpoint.url?.absoluteString))")
-        #expect((endpoint.url?.absoluteString ?? "") == "https://restcountries.com/v3/name/egypt?fullText=true")
+        #expect(endpoint.url?.absoluteString == "https://restcountries.com/v3/name/egypt?fullText=true")
     }
 
     @Test func buildsAbsoluteURLWithQueryItems() async throws {
