@@ -48,7 +48,7 @@ struct Endpoint {
     }
 
     init(
-        baseUrl: URL = URL(string: "https://restcountries.com/v3/")!,
+        baseUrl: URL = URL(string: "https://restcountries.com/v3.1/")!,
         path: String? = nil,
         method: HTTPMethod = .get,
         headers: [String: String] = ["Accept": "application/json"],
@@ -77,7 +77,7 @@ extension Endpoint {
     /// Values are converted via `CustomStringConvertible`; nil values are skipped.
     /// Keys are sorted to stabilize URL ordering for tests.
     init(
-        baseUrl: URL = URL(string: "https://restcountries.com/v2/")!,
+        baseUrl: URL = URL(string: "https://restcountries.com/v3.1/")!,
         path: String? = nil,
         method: HTTPMethod = .get,
         headers: [String: String] = ["Accept": "application/json"],

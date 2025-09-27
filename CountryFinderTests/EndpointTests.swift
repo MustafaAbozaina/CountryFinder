@@ -13,11 +13,12 @@ struct EndpointTests {
 
     @Test func buildsRelativeURLWithQueryItems() async throws {
         let endpoint = Endpoint(
-            baseUrl: URL(string: "https://restcountries.com/v2/")!,
+            baseUrl: URL(string: "https://restcountries.com/v3/")!,
             path: "name/egypt",
             queryItems: [URLQueryItem(name: "fullText", value: "true")]
         )
-        #expect(endpoint.url?.absoluteString == "https://restcountries.com/v2/a/egypt?fullText=true")
+        debugPrint("Mostafa \(String(describing: endpoint.url?.absoluteString))")
+        #expect((endpoint.url?.absoluteString ?? "") == "https://restcountries.com/v3/name/egypt?fullText=true")
     }
 
     @Test func buildsAbsoluteURLWithQueryItems() async throws {
