@@ -7,14 +7,17 @@
 
 import Foundation
 
-protocol CountriesCachingRepository {
-    func saveFavoriteCountry(_ country: Country) async throws
+protocol CountriesRepository {
+    func fetchAllCountries() async throws -> [Country]
     func saveCountries(_ countries: [Country]) async throws
-    func getCachedCountries() async throws -> [Country]
+    func searchCountries(keyword: String, strategy: SearchStrategy) async throws -> [Country]
+
+    func saveFavoriteCountry(_ country: Country) async throws
     func deleteCountry(_ country: Country) async throws
+    func getCachedCountries() async throws -> [Country]
 }
 
-protocol CountriesRemoteRepository {
-    func fetchRemoteCountries(keyword: String) async throws -> [Country]
-    func fetchAllCountries() async throws -> [Country]
+enum SearchStrategy {
+    case local
+    case remote
 }

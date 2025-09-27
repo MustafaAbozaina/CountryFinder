@@ -19,14 +19,14 @@ final class DefaultCountriesRemoteDataSource: CountriesRemoteDataSource {
         self.client = client
     }
 
-    // Suggested default v2 field list; callers may override
+    // Suggested default v3 field list; callers may override
     private var defaultFields: [String] {
         [
             "name",
             "capital",
             "currencies",
-            "flag",
-            "alpha3Code",
+            "flags",
+            "cca3",
             "region",
             "subregion",
             "population",
