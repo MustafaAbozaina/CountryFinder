@@ -13,13 +13,16 @@ protocol CountriesLocalDataSource {
     func saveCountries(_ countries: [Country]) async throws
     func getCachedCountries() async throws -> [Country]
     func deleteCountry(_ country: Country) async throws
+    func localCountriesCount() async -> Int 
 }
 
-actor CountriesLocalDataSourceActor: CountriesLocalDataSource {
-    private let context: ModelContext
-
-    init(context: ModelContext) {
-        self.context = context
+actor DefaultCountriesLocalDataSource: CountriesLocalDataSource {
+    let modelContainer: ModelContainer
+    
+    private lazy var context: ModelContext = ModelContext(modelContainer)
+    
+    init(modelContainer: ModelContainer) {
+        self.modelContainer = modelContainer
     }
 
     func getCachedCountries() async throws -> [Country] {
@@ -75,6 +78,14 @@ actor CountriesLocalDataSourceActor: CountriesLocalDataSource {
                 flagURL: country.flagURL
             )
             context.insert(entity)
+        }
+    }
+    
+    func localCountriesCount() async -> Int {
+        do {
+            return try context.fetchCount(FetchDescriptor<CountryEntity>())
+        } catch {
+            return 0
         }
     }
 }

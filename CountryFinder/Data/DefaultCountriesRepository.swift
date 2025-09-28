@@ -55,4 +55,8 @@ final class DefaultCountriesRepository: CountriesRepository {
     func getCachedCountries() async throws -> [Country] {
         return try await local.getCachedCountries()
     }
+    
+    func getCountriesCount() async -> Int {
+        return await local.localCountriesCount()
+    }
 }

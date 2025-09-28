@@ -19,10 +19,12 @@ final class DefaultFetchCountriesUseCase: FetchCountriesUseCase {
     }
     
     func execute(keyword: String) async throws -> [Country] {
+        let strategy: SearchStrategy = await repository.getCountriesCount() < 5 ? .remote : .local
+        
         if keyword.isEmpty {
-            return try await repository.fetchAllCountries(strategy: .remote)
+            return try await repository.fetchAllCountries(strategy: strategy)
         } else {
-            return try await repository.searchCountries(keyword: keyword, strategy: .remote)
+            return try await repository.searchCountries(keyword: keyword, strategy: strategy)
         }
     }
 }
