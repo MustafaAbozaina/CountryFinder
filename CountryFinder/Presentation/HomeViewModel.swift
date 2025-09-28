@@ -8,9 +8,13 @@
 import SwiftUI
 
 class HomeViewModel: ObservableObject {
-    @Published var countries: [Country] = []
+    @Published var countries: [Country] = [] {
+        didSet {
+            isAddingNewCountryDisabled = countries.count >= 5
+        }
+    }
     @Published var showSearch:Bool = false
-    @Published var isAddingNewCountryDisabled: Bool = false
+    @Published private(set) var isAddingNewCountryDisabled: Bool = false
 
     let router: HomeViewRouter
     
@@ -26,8 +30,7 @@ class HomeViewModel: ObservableObject {
     func fetchCountries() {
         Task {
             do {
-                let countries =  try await loadCountriesUseCase.execute(keyword: "")
-                debugPrint("Mostafa countries \(countries)")
+                let countries =  try await loadCountriesUseCase.execute(keyword: "", strategy: .local)
                 Task {@MainActor in self.countries = countries }
             } catch {
                 debugPrint("Error")
@@ -45,21 +48,24 @@ class HomeViewModel: ObservableObject {
     
     
     func addCountry(_ country: Country) {
-        countries.append(country)
         guard countries.count < 5, !countries.contains(country) else {
-            isAddingNewCountryDisabled = true
             return
+        }
+        Task {
+           try? await saveCountryUseCase.execute(country: country)
         }
         countries.append(country)
     }
     
     func removeCountry(atOffsets offsets: IndexSet) {
+        let removed = offsets.map { countries[$0] } // capture countries before removal
         countries.remove(atOffsets: offsets)
+
         Task {
-            if let index = offsets.first {
+            for country in removed {
                 do {
-                   try await deleteCountryUseCase.execute(country: countries[index])
-                } catch  {
+                    try await deleteCountryUseCase.execute(country: country)
+                } catch {
                     debugPrint("error is \(error)")
                 }
             }

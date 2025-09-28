@@ -6,41 +6,40 @@
 //
 
 import Combine
+import Foundation
 
 final class CountrySearchViewModel: ObservableObject {
     @Published var searchText = ""
     @Published var searchResults: [Country] = []
-    private var countries: [Country] = [] {
-        didSet {
-            searchResults = countries
-        }
-    }
     
-    @Inject var loadCountriesUseCase: FetchCountriesUseCase
+    private var cancellables = Set<AnyCancellable>()
     
     init() {
-        fetchCountries()
+        setupSearchDebounce()
     }
     
-    func fetchCountries() {
-        Task {
-            do {
-                let countries =  try await loadCountriesUseCase.execute(keyword: "")
-                Task {@MainActor in self.countries = countries }
-            } catch {
-                debugPrint("Error")
-            }
+    @Inject var fetchCountriesUseCase: FetchCountriesUseCase
+
+    private func setupSearchDebounce() {
+            $searchText
+                .debounce(for: .milliseconds(300), scheduler: RunLoop.main)
+                .removeDuplicates()
+                .sink { [weak self] keyword in
+                    guard let self else { return }
+                    Task {
+                        await self.fetchCountries(keyword: keyword)
+                    }
+                }
+                .store(in: &cancellables)
         }
-    }
     
-    @MainActor
-    func performSearch() async {
-        guard !searchText.isEmpty else {
-            searchResults = []
-            return
+    func fetchCountries(keyword: String) async {
+        guard !keyword.isEmpty else { return }
+        do {
+            let countries =  try await fetchCountriesUseCase.execute(keyword: keyword, strategy: .remote)
+            Task {@MainActor in self.searchResults = countries }
+        } catch {
+            debugPrint("Error")
         }
-        let results = countries.filter { $0.name.localizedCaseInsensitiveContains(searchText) }
-        searchResults = results
-        
     }
 }
