@@ -154,7 +154,6 @@ struct CountryDetailsView: View {
                 .clipShape(RoundedRectangle(cornerRadius: 12))
                 .padding(16)
             }
-//            .buttonStyle(ScaleButtonStyle())
         }
         .background(Color(.systemBackground))
         .clipShape(RoundedRectangle(cornerRadius: 16))

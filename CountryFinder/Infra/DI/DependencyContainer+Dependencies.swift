@@ -11,6 +11,7 @@ extension AppDependencyContainer {
      func registerCoreServices() {
         self.register(ModelContainer.self, singleton: self.createSharedModelContainer())
         self.register(NetworkManager.self, singleton: NetworkManager())
+        self.register(LocationManager.self, singleton: LocationManager())
     }
     
     private func createSharedModelContainer() -> ModelContainer {
@@ -50,6 +51,12 @@ extension AppDependencyContainer {
         }
         self.register(DeleteCountryUseCase.self) {
             DefaultDeleteCountryUseCase(repository: countriesRepository)
+        }
+        self.register(FindCountryByLocationUseCase.self) {
+            DefaultFindCountryByLocationUseCase(
+                repository: countriesRepository,
+                locationManager: self.resolve(LocationManager.self)
+            )
         }
     }
 }
