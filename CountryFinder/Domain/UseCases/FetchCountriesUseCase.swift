@@ -8,7 +8,7 @@
 import Foundation
 
 protocol FetchCountriesUseCase {
-    func execute(keyword: String) async throws -> [Country]
+    func execute(keyword: String, strategy: SearchStrategy?) async throws -> [Country]
 }
 
 final class DefaultFetchCountriesUseCase: FetchCountriesUseCase {
@@ -18,13 +18,18 @@ final class DefaultFetchCountriesUseCase: FetchCountriesUseCase {
         self.repository = repository
     }
     
-    func execute(keyword: String) async throws -> [Country] {
-        let strategy: SearchStrategy = await repository.getCountriesCount() < 5 ? .remote : .local
+    func execute(keyword: String, strategy: SearchStrategy? = nil) async throws -> [Country] {
+        let effectiveStrategy: SearchStrategy
+        if let strategy = strategy {
+            effectiveStrategy = strategy
+        } else {
+            effectiveStrategy = await repository.getCountriesCount() < 5 ? .remote : .local
+        }
         
         if keyword.isEmpty {
-            return try await repository.fetchAllCountries(strategy: strategy)
+            return try await repository.fetchAllCountries(strategy: effectiveStrategy)
         } else {
-            return try await repository.searchCountries(keyword: keyword, strategy: strategy)
+            return try await repository.searchCountries(keyword: keyword, strategy: effectiveStrategy)
         }
     }
 }

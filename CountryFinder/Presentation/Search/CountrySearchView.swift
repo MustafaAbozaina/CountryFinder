@@ -22,9 +22,6 @@ struct CountrySearchView: View {
                         Button("Cancel") { dismiss() }
                     }
                 }
-                .onChange(of: viewModel.searchText) { _, _ in
-                    Task { await viewModel.performSearch() }
-                }
         }
     }
     

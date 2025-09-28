@@ -38,8 +38,6 @@ final class DefaultCountriesRepository: CountriesRepository {
             return cached.filter { $0.name.localizedCaseInsensitiveContains(keyword) }
         case .remote:
             let results = try await remote.searchByName(keyword, fullText: false)
-            // Write-through: cache the results for offline reuse
-            try await local.saveCountries(results)
             return results
         }
     }
