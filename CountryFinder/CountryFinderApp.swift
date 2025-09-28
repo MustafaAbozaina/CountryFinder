@@ -19,17 +19,11 @@ struct CountryFinderApp: App {
                 HomeView(viewModel: HomeViewModel(router: DefaultHomeViewRouter(navigationManager: navigationManager) ))
             } destinationBuilder: { target in
                 switch target {
-                case .countryDetails(_):
-                    CountryDetailsView()
+                case .countryDetails(let country):
+                    CountryDetailsView(country: country)
                 }
             }
         }
         .modelContainer(appDependencyContainer.resolve(ModelContainer.self))
-    }
-}
-
-struct CountryDetailsView: View {
-    var body: some View {
-        Text("Country Details")
     }
 }
