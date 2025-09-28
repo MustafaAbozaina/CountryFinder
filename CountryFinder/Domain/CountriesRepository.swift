@@ -15,6 +15,7 @@ protocol CountriesRepository {
     func saveFavoriteCountry(_ country: Country) async throws
     func deleteCountry(_ country: Country) async throws
     func getCachedCountries() async throws -> [Country]
+    func getCountriesCount() async -> Int
 }
 
 enum SearchStrategy {

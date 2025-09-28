@@ -10,23 +10,26 @@ import SwiftData
 
 @main
 struct CountryFinderApp: App {
-    var sharedModelContainer: ModelContainer = {
-        let schema = Schema([
-            Item.self,
-        ])
-        let modelConfiguration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: false)
-
-        do {
-            return try ModelContainer(for: schema, configurations: [modelConfiguration])
-        } catch {
-            fatalError("Could not create ModelContainer: \(error)")
-        }
-    }()
+    @StateObject var navigationManager = NavigationManager()
+    let appDependencyContainer = AppDependencyContainer.shared
 
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            Navigator(navigationManager: navigationManager) {
+                HomeView(viewModel: HomeViewModel(router: DefaultHomeViewRouter(navigationManager: navigationManager) ))
+            } destinationBuilder: { target in
+                switch target {
+                case .countryDetails(_):
+                    CountryDetailsView()
+                }
+            }
         }
-        .modelContainer(sharedModelContainer)
+        .modelContainer(appDependencyContainer.resolve(ModelContainer.self))
+    }
+}
+
+struct CountryDetailsView: View {
+    var body: some View {
+        Text("Country Details")
     }
 }
