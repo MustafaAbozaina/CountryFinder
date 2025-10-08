@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct CountryDetailsView: View {
-    let viewModel: CountryDetailsViewModel
+    @ObservedObject var viewModel: CountryDetailsViewModel
     
     var body: some View {
         ScrollView {
@@ -30,6 +30,9 @@ struct CountryDetailsView: View {
             ToolbarItem(placement: .navigationBarTrailing) {
                 shareButton
             }
+        }
+        .task {
+            viewModel.loadFlagImage()
         }
     }
     
@@ -90,9 +93,6 @@ struct CountryDetailsView: View {
                     .foregroundColor(.secondary)
                     .padding(20)
             }
-        }
-        .onAppear {
-            loadFlagImage()
         }
     }
     
@@ -172,22 +172,4 @@ struct CountryDetailsView: View {
                 .fontWeight(.medium)
         }
     }
-    
-    // MARK: - Methods
-    private func loadFlagImage() {
-        guard let urlString = viewModel.country.flagURL, let url = URL(string: urlString) else {
-            viewModel.flagLoadingState = .error
-            return
-        }
-        
-        URLSession.shared.dataTask(with: url) { data, response, error in
-            DispatchQueue.main.async {
-                if let data = data, let uiImage = UIImage(data: data) {
-                    viewModel.flagLoadingState = .success(Image(uiImage: uiImage))
-                } else {
-                    viewModel.flagLoadingState = .error
-                }
-            }
-        }.resume()
-    }    
 }
