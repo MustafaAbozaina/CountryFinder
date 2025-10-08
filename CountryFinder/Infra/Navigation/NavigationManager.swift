@@ -9,9 +9,14 @@ import SwiftUI
 
 class NavigationManager: ObservableObject {
     @Published var path = NavigationPath()
+    @Published var presentedDestination: PresentedDestination?
     
     func push(_ target: NavigationTarget) {
         path.append(target)
+    }
+    
+    func present(_ destination: PresentedDestination) {
+        presentedDestination = destination
     }
 
     func pop() {
@@ -21,8 +26,8 @@ class NavigationManager: ObservableObject {
     func popToRoot() {
         path.removeLast(path.count)
     }
-}
-
-enum NavigationTarget: Hashable {
-    case countryDetails(Country)
+    
+    func dismissSheet() {
+        presentedDestination = nil
+    }
 }
