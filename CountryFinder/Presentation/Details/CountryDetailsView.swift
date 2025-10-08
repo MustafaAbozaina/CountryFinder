@@ -15,7 +15,7 @@ struct CountryDetailsView: View {
             LazyVStack(spacing: 20) {
                 flagHeaderSection
                 infoCard
-            
+                
                 if let mapURL = viewModel.mapURL {
                     mapSection(mapURL)
                 }
@@ -30,9 +30,6 @@ struct CountryDetailsView: View {
             ToolbarItem(placement: .navigationBarTrailing) {
                 shareButton
             }
-        }
-        .task {
-            viewModel.loadFlagImage()
         }
     }
     
@@ -77,26 +74,9 @@ struct CountryDetailsView: View {
     }
     
     private var flagImage: some View {
-        Group {
-            switch viewModel.flagLoadingState {
-            case .loading:
-                ProgressView()
-                    .scaleEffect(1.2)
-            case .success(let image):
-                image
-                    .resizable()
-                    .scaledToFill()
-            case .error:
-                Image(systemName: "flag.slash")
-                    .resizable()
-                    .scaledToFit()
-                    .foregroundColor(.secondary)
-                    .padding(20)
-            }
-        }
+        RemoteImage(url: URL(string: viewModel.country.flagURL ?? ""), placeholder: "flag.slash")
     }
-    
-    // MARK: - Main Info Card
+
     private var infoCard: some View {
         VStack(spacing: 0) {
             cardHeader(title: "Country Information", systemImage: "info.circle")
