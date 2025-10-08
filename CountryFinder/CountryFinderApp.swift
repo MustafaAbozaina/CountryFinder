@@ -10,17 +10,30 @@ import SwiftData
 
 @main
 struct CountryFinderApp: App {
-    @StateObject var navigationManager = NavigationManager()
+    let navigationManager: NavigationManager
+    let homeViewModel: HomeViewModel
     let appDependencyContainer = AppDependencyContainer.shared
+    
+    init() {
+        let nav = NavigationManager()
+        navigationManager = nav
+        let router = DefaultHomeViewRouter(navigationManager: nav)
+        homeViewModel = HomeViewModel(router: router)
+    }
 
     var body: some Scene {
         WindowGroup {
             Navigator(navigationManager: navigationManager) {
-                HomeView(viewModel: HomeViewModel(router: DefaultHomeViewRouter(navigationManager: navigationManager) ))
+                HomeView(viewModel: homeViewModel)
             } destinationBuilder: { target in
                 switch target {
                 case .countryDetails(let country):
                     CountryDetailsView(country: country)
+                }
+            } sheetBuilder: { destination in
+                switch destination.type {
+                case .countrySearch(let onSelect):
+                    CountrySearchView(viewModel: CountrySearchViewModel(), onSelect: onSelect)
                 }
             }
         }
