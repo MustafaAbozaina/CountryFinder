@@ -74,7 +74,13 @@ struct CountryDetailsView: View {
     }
     
     private var flagImage: some View {
-        RemoteImage(url: URL(string: viewModel.country.flagURL ?? ""), placeholder: "flag.slash")
+        RemoteImage(url: URL(string: viewModel.country.flagURL ?? ""), placeholder: "flag.slash") { image in
+            image
+                .resizable()
+                .scaledToFit()
+                .font(.system(size: 56, weight: .regular))
+                .foregroundStyle(.secondary)
+        }
     }
 
     private var infoCard: some View {
