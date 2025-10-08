@@ -28,7 +28,7 @@ struct CountryFinderApp: App {
             } destinationBuilder: { target in
                 switch target {
                 case .countryDetails(let country):
-                    CountryDetailsView(country: country)
+                    CountryDetailsView(viewModel: CountryDetailsViewModel(country: country))
                 }
             } sheetBuilder: { destination in
                 switch destination.type {
