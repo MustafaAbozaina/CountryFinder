@@ -26,11 +26,19 @@ struct MockingViewModelUseCasesExample {
 
 
 class MockFetchCountriesUseCase: FetchCountriesUseCase {
+    func execute(keyword: String, strategy: CountryFinder.SearchStrategy?) async throws -> [CountryFinder.Country] {
+        return []
+    }
+    
     func execute(keyword: String) async throws -> [CountryFinder.Country] {
         return [Country(id: "123", name: "Egypt", capital: "Cairo", flagURL: "egypt-flag", currency: "EGP")]
     }
 }
 
 class MockedHomeRouter: HomeViewRouter {
+    func presentCountrySearch(onSelect: @escaping (CountryFinder.Country) -> Void) {
+        
+    }
+    
     func moveToCountryDetails(_ country: CountryFinder.Country) { }
 }
