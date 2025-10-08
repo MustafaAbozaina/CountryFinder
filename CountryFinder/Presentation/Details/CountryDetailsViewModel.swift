@@ -38,24 +38,6 @@ class CountryDetailsViewModel: ObservableObject {
     enum FlagLoadingState {
         case loading, success(Image), error
     }
-    
-    
-    func loadFlagImage() {
-        guard let urlString = country.flagURL, let url = URL(string: urlString) else {
-            flagLoadingState = .error
-            return
-        }
-        
-        ImageLoader.shared.loadImage(from: url) { [weak self] result in
-            guard let self else { return }
-            switch result {
-            case .success(let uiImage):
-                self.flagLoadingState = .success(Image(uiImage: uiImage))
-            case .failure:
-                self.flagLoadingState = .error
-            }
-        }
-    }
 }
 
 struct CountryDetailItem: Identifiable {
