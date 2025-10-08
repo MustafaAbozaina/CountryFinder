@@ -8,13 +8,7 @@
 import SwiftUI
 
 struct CountryDetailsView: View {
-    let country: Country
-    @State private var imageLoadingState: LoadingState = .loading
-    @State private var showAllDetails = false
-    
-    private var viewModel: CountryDetailsViewModel {
-        CountryDetailsViewModel(country: country)
-    }
+    let viewModel: CountryDetailsViewModel
     
     var body: some View {
         ScrollView {
@@ -22,7 +16,6 @@ struct CountryDetailsView: View {
                 flagHeaderSection
                 infoCard
             
-                
                 if let mapURL = viewModel.mapURL {
                     mapSection(mapURL)
                 }
@@ -31,7 +24,7 @@ struct CountryDetailsView: View {
             .padding(.vertical, 8)
         }
         .background(Color(.systemGroupedBackground))
-        .navigationTitle(country.name)
+        .navigationTitle(viewModel.country.name)
         .navigationBarTitleDisplayMode(.large)
         .toolbar {
             ToolbarItem(placement: .navigationBarTrailing) {
@@ -65,11 +58,11 @@ struct CountryDetailsView: View {
                                 .stroke(Color.primary.opacity(0.1), lineWidth: 1)
                         )
                     
-                    Text(country.name)
+                    Text(viewModel.country.name)
                         .font(.title2)
                         .fontWeight(.bold)
                     
-                    if let capital = country.capital, !capital.isEmpty {
+                    if let capital = viewModel.country.capital, !capital.isEmpty {
                         Text(capital)
                             .font(.subheadline)
                             .foregroundStyle(.secondary)
@@ -82,7 +75,7 @@ struct CountryDetailsView: View {
     
     private var flagImage: some View {
         Group {
-            switch imageLoadingState {
+            switch viewModel.flagLoadingState {
             case .loading:
                 ProgressView()
                     .scaleEffect(1.2)
@@ -174,9 +167,7 @@ struct CountryDetailsView: View {
     }
     
     private var shareButton: some View {
-        Button {
-            shareCountryInfo()
-        } label: {
+        ShareLink(item: viewModel.shareText) {
             Image(systemName: "square.and.arrow.up")
                 .fontWeight(.medium)
         }
@@ -184,70 +175,19 @@ struct CountryDetailsView: View {
     
     // MARK: - Methods
     private func loadFlagImage() {
-        guard let urlString = country.flagURL, let url = URL(string: urlString) else {
-            imageLoadingState = .error
+        guard let urlString = viewModel.country.flagURL, let url = URL(string: urlString) else {
+            viewModel.flagLoadingState = .error
             return
         }
         
         URLSession.shared.dataTask(with: url) { data, response, error in
             DispatchQueue.main.async {
                 if let data = data, let uiImage = UIImage(data: data) {
-                    imageLoadingState = .success(Image(uiImage: uiImage))
+                    viewModel.flagLoadingState = .success(Image(uiImage: uiImage))
                 } else {
-                    imageLoadingState = .error
+                    viewModel.flagLoadingState = .error
                 }
             }
         }.resume()
-    }
-    
-    private func shareCountryInfo() {
-        let info = "\(country.name)\nCapital: \(country.capital ?? "N/A")\nCurrency: \(country.currency ?? "N/A")"
-        let activityVC = UIActivityViewController(activityItems: [info], applicationActivities: nil)
-        
-        if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
-           let rootViewController = windowScene.windows.first?.rootViewController {
-            rootViewController.present(activityVC, animated: true)
-        }
-    }
-}
-
-// MARK: - Supporting Types
-enum LoadingState {
-    case loading, success(Image), error
-}
-
-struct ScaleButtonStyle: ButtonStyle {
-    func makeBody(configuration: Configuration) -> some View {
-        configuration.label
-            .scaleEffect(configuration.isPressed ? 0.95 : 1.0)
-            .animation(.easeInOut(duration: 0.1), value: configuration.isPressed)
-    }
-}
-
-struct CountryDetailsViewModel {
-    let country: Country
-    
-    var detailItems: [CountryDetailItem] {
-        let items: [CountryDetailItem] = [
-            .init(icon: "building.2.fill", label: "Capital", value: country.capital ?? "", color: .blue),
-            .init(icon: "dollarsign.circle.fill", label: "Currency", value: country.currency ?? "", color: .green)
-        ]
-
-        return items
-    }
-    
-    var mapURL: URL? {
-        guard let name = country.name.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) else { return nil }
-         return URL(string: "https://maps.apple.com/?q=\(name)")
-     }
-
-}
-
-
-struct CountryDetailItem: Identifiable {
-    let id = UUID()
-    let icon: String
-    let label: String
-    let value: String
-    let color: Color
+    }    
 }
