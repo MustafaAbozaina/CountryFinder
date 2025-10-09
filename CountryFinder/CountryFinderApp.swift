@@ -13,12 +13,14 @@ struct CountryFinderApp: App {
     let navigationManager: NavigationManager
     let homeViewModel: HomeViewModel
     let appDependencyContainer = AppDependencyContainer.shared
+    let bannerManager: AppBannerManager
     
     init() {
         let nav = NavigationManager()
         navigationManager = nav
         let router = DefaultHomeViewRouter(navigationManager: nav)
         homeViewModel = HomeViewModel(router: router)
+        bannerManager = appDependencyContainer.resolve(AppBannerManager.self)
     }
 
     var body: some Scene {
@@ -36,6 +38,8 @@ struct CountryFinderApp: App {
                     CountrySearchView(viewModel: CountrySearchViewModel(), onSelect: onSelect)
                 }
             }
+            .bannerOverlay()
+            .environmentObject(bannerManager)
         }
         .modelContainer(appDependencyContainer.resolve(ModelContainer.self))
     }
