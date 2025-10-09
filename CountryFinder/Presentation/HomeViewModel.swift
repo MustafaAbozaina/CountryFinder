@@ -16,7 +16,8 @@ class HomeViewModel: ObservableObject {
     }
     @Published private(set) var isAddingNewCountryDisabled: Bool = false
     @Published private(set) var isLoadingLocation: Bool = false
-
+    
+    @Inject var bannerRouter: BannerRouting
     let router: HomeViewRouter
     private var cancellables = Set<AnyCancellable>()
     
@@ -41,7 +42,7 @@ class HomeViewModel: ObservableObject {
                 let countries =  try await loadCountriesUseCase.execute(keyword: "", strategy: .local)
                 Task {@MainActor in self.countries = countries }
             } catch {
-                debugPrint("Error")
+                await bannerRouter.show(message: error.localizedDescription, color: .red, autoHide: 2)
             }
         }
     }
