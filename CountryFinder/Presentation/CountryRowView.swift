@@ -35,20 +35,13 @@ struct CountryRowView: View {
     private var flagView: some View {
         Group {
             if let url = URL(string: country.flagURL ?? "") {
-                AsyncImage(url: url) { phase in
-                    switch phase {
-                    case .success(let image):
-                        image
-                            .resizable()
-                            .scaledToFill()
-                    case .failure, .empty:
-                        placeholderFlag
-                    @unknown default:
-                        placeholderFlag
-                    }
+                RemoteImage(url: url, placeholder: "globe") { image in
+                    image
+                        .resizable()
+                        .scaledToFill()
+                        .font(.system(size: 56, weight: .regular))
+                        .foregroundStyle(.secondary)
                 }
-            } else {
-                placeholderFlag
             }
         }
         .frame(width: 36, height: 36)

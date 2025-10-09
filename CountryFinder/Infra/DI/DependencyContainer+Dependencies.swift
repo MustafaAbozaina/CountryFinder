@@ -10,7 +10,10 @@ import SwiftData
 extension AppDependencyContainer {
      func registerCoreServices() {
         self.register(ModelContainer.self, singleton: self.createSharedModelContainer())
+        self.register(NetworkMonitoring.self, singleton: NetworkMonitor.shared)
         self.register(NetworkManager.self, singleton: NetworkManager())
+        self.register(AppBannerManager.self, singleton: AppBannerManager(network: self.resolve(NetworkMonitoring.self)))
+        self.register(BannerRouting.self, singleton: self.resolve(AppBannerManager.self))
         self.register(LocationManager.self, singleton: LocationManager())
     }
     

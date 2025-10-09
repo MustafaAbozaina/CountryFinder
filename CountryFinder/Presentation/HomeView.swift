@@ -16,12 +16,6 @@ struct HomeView: View {
             .toolbar {
                 addButton
             }
-            .sheet(isPresented: $viewModel.showSearch) {
-                CountrySearchView(viewModel: CountrySearchViewModel()) { selected in
-                    viewModel.addCountry(selected)
-                    viewModel.showSearch = false
-                }
-            }
     }
     
     private var countryListView: some View {
@@ -48,7 +42,7 @@ struct HomeView: View {
     }
     
     private var addButton: some View {
-        Button(action: { viewModel.showSearch = true }) {
+        Button(action: { viewModel.addCountryButtonTapped() }) {
             Image(systemName: "plus")
                 .font(.headline)
                 .padding(8)
@@ -85,7 +79,7 @@ private extension HomeView {
                 .multilineTextAlignment(.center)
                 .foregroundStyle(.secondary)
                 .padding(.horizontal)
-            Button(action: { viewModel.showSearch = true }) {
+            Button(action: { viewModel.addCountryButtonTapped() }) {
                 Label("Add Country", systemImage: "plus")
                     .font(.headline)
                     .padding(.vertical, 10)

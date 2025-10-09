@@ -14,10 +14,10 @@ class HomeViewModel: ObservableObject {
             isAddingNewCountryDisabled = countries.count >= 5
         }
     }
-    @Published var showSearch:Bool = false
     @Published private(set) var isAddingNewCountryDisabled: Bool = false
     @Published private(set) var isLoadingLocation: Bool = false
-
+    
+    @Inject var bannerRouter: BannerRouting
     let router: HomeViewRouter
     private var cancellables = Set<AnyCancellable>()
     
@@ -42,13 +42,13 @@ class HomeViewModel: ObservableObject {
                 let countries =  try await loadCountriesUseCase.execute(keyword: "", strategy: .local)
                 Task {@MainActor in self.countries = countries }
             } catch {
-                debugPrint("Error")
+                await bannerRouter.show(message: error.localizedDescription, color: .red, autoHide: 2)
             }
         }
     }
     
     func countryRowTapped(_ country: Country) {
-        router.moveToCountryDetails(country)
+        router.showCountryDetails(country)
     }
     
   
@@ -113,6 +113,12 @@ class HomeViewModel: ObservableObject {
         }
     }
     
+    func addCountryButtonTapped() {
+        router.showSearch { [weak self] country in
+            guard let self else { return }
+            self.addCountry(country)
+        }
+    }
     
     func addCountry(_ country: Country) {
         guard countries.count < 5, !countries.contains(country) else {

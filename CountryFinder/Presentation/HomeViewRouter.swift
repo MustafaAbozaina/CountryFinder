@@ -8,7 +8,8 @@
 import Foundation
 
 protocol HomeViewRouter {
-    func moveToCountryDetails(_ country: Country)
+    func showCountryDetails(_ country: Country)
+    func showSearch(onSelect: @escaping (Country) -> Void)
 }
 
 class DefaultHomeViewRouter: HomeViewRouter {
@@ -18,7 +19,16 @@ class DefaultHomeViewRouter: HomeViewRouter {
         self.navigationManager = navigationManager
     }
     
-    func moveToCountryDetails(_ country: Country) {
+    func showCountryDetails(_ country: Country) {
         navigationManager.push(.countryDetails(country))
+    }
+    
+        
+    func showSearch(onSelect: @escaping (Country) -> Void) {
+        navigationManager.present(PresentedDestination(type: .countrySearch { [weak self] selected in
+            guard let self else { return }
+            onSelect(selected)
+            self.navigationManager.dismissSheet()
+        }))
     }
 }

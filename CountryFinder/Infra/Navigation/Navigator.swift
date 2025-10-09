@@ -7,10 +7,11 @@
 
 import SwiftUI
 
-struct Navigator<Content: View, Destination: View>: View {
+struct Navigator<Content: View, Destination: View, Sheet: View>: View {
     @ObservedObject var navigationManager: NavigationManager
-    var content: () -> Content
-    var destinationBuilder: (NavigationTarget) -> Destination
+    let content: () -> Content
+    let destinationBuilder: (NavigationTarget) -> Destination
+    let sheetBuilder: (PresentedDestination) -> Sheet
     
     var body: some View {
         NavigationStack(path: $navigationManager.path) {
@@ -18,6 +19,7 @@ struct Navigator<Content: View, Destination: View>: View {
                 .navigationDestination(for: NavigationTarget.self) { target in
                     destinationBuilder(target)
                 }
+                .sheet(item: $navigationManager.presentedDestination, content: sheetBuilder)
         }
     }
 }
