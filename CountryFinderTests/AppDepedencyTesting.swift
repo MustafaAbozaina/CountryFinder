@@ -36,9 +36,11 @@ class MockFetchCountriesUseCase: FetchCountriesUseCase {
 }
 
 class MockedHomeRouter: HomeViewRouter {
-    func presentCountrySearch(onSelect: @escaping (CountryFinder.Country) -> Void) {
+    func showCountryDetails(_ country: CountryFinder.Country) {
         
     }
     
-    func moveToCountryDetails(_ country: CountryFinder.Country) { }
+    func showSearch(onSelect: @escaping (CountryFinder.Country) -> Void) {
+        
+    }
 }
